@@ -1,9 +1,12 @@
 import copy
 import glob
 import os
+import sys
 import time
 import types
 from collections import deque
+
+sys.path.append(".")
 
 import gym
 import numpy as np
