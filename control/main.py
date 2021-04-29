@@ -17,6 +17,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import algo
+import vizdoomgym
 from arguments import get_args
 from envs import make_vec_envs
 from model import Policy
