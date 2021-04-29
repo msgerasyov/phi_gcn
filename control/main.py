@@ -7,6 +7,7 @@ import types
 from collections import deque
 
 sys.path.append(".")
+sys.path.append("./phi_gcn")
 
 import gym
 import numpy as np
