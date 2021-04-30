@@ -6,9 +6,6 @@ import time
 import types
 from collections import deque
 
-sys.path.append(".")
-sys.path.append("./phi_gcn")
-
 import gym
 import numpy as np
 import torch
@@ -71,12 +68,12 @@ def main():
 
         print ("---------------------------------------")
         print ('Saving to', logger.save_folder)
-        print ("---------------------------------------")  
+        print ("---------------------------------------")
 
     else:
         print ("---------------------------------------")
         print ('NOTE : NOT SAVING RESULTS')
-        print ("---------------------------------------") 
+        print ("---------------------------------------")
     all_rewards = []
 
 
@@ -152,8 +149,8 @@ def main():
                         rollouts.obs[step],
                         rollouts.recurrent_hidden_states[step],
                         rollouts.masks[step])
-            
-            
+
+
             # Obser reward and next obs
             obs, reward, done, infos = envs.step(action)
             delay_rew+=reward
@@ -224,7 +221,7 @@ def main():
             save_gcn = gcn_model
             if args.cuda:
                 save_model = copy.deepcopy(actor_critic).cpu()
-                save_gcn = copy.deepcopy(gcn_model).cpu()  
+                save_gcn = copy.deepcopy(gcn_model).cpu()
 
             save_model = [save_gcn, save_model,  hasattr(envs.venv, 'ob_rms') and envs.venv.ob_rms or None]
 
@@ -238,7 +235,7 @@ def main():
             end = time.time()
             print("Updates {}, num timesteps {}, FPS {} \n Last {}\
              training episodes: mean/median reward {:.2f}/{:.2f},\
-              min/max reward {:.2f}/{:.2f}, success rate {:.2f}, avg fwdloss {:.2f}\n".
+              min/max reward {:.2f}/{:.2f}, success rate {:.2f}\n".
                 format(
                     j, total_num_steps,
                     int(total_num_steps / (end - start)),
@@ -248,7 +245,6 @@ def main():
                     np.min(episode_rewards),
                     np.max(episode_rewards),
                     np.count_nonzero(np.greater(episode_rewards, 0)) / len(episode_rewards),
-                    np.mean(avg_fwdloss),
                 )
             )
 

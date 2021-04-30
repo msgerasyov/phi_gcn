@@ -104,3 +104,6 @@ trained_models/
 .fuse_hidden*
 
 .DS_Store
+
+results
+results/
