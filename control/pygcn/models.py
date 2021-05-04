@@ -40,7 +40,8 @@ class GAT(nn.Module):
         h = self.conv1(g, x)
         h = h.view(-1, h.shape[1] * h.shape[2])
         h = F.elu(h)
-        h = self.conv2(g, h).squeeze()
+        h = self.conv2(g, h)
+        h = h.view(-1, h.shape[1] * h.shape[2])
         return F.log_softmax(h, dim=1)
 
 
