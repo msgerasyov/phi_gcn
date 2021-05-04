@@ -7,6 +7,8 @@ def get_args():
     parser = argparse.ArgumentParser(description='RL')
     parser.add_argument('--algo', default='a2c',
                         help='algorithm to use: a2c | ppo | acktr')
+    parser.add_argument('--gnn', default='gcn',
+                        help='gnn model to use: gcn | gat | sage')
     parser.add_argument('--lr', type=float, default=7e-4,
                         help='learning rate')
     parser.add_argument('--eps', type=float, default=1e-5,
@@ -67,7 +69,7 @@ def get_args():
                         help='port to run the server on (default: 8097)')
 
     parser.add_argument('--use-logger', action='store_true', default=False,
-                        help='log the results') 
+                        help='log the results')
     parser.add_argument('--folder', default='./results',
                         help='folder to save results')
     parser.add_argument('--gcn_epochs', type=int, default=1,

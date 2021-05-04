@@ -114,9 +114,17 @@ def main():
     ############################
     # GCN Model and optimizer
     from pygcn.train import update_graph
-    from pygcn.models import GCN
-    gcn_model = GCN(nfeat=actor_critic.base.output_size,
-                nhid=args.gcn_hidden)
+    from pygcn.models import GCN, GAT, SAGE
+    if args.gnn == 'gat':
+        gcn_model = GAT(nfeat=actor_critic.base.output_size,
+                    nhid=args.gcn_hidden)
+    elif args.gnn == 'sage':
+        gcn_model = SAGE(nfeat=actor_critic.base.output_size,
+                    nhid=args.gcn_hidden)
+    else:
+        gcn_model = GCN(nfeat=actor_critic.base.output_size,
+                    nhid=args.gcn_hidden)
+
     gcn_model.to(device)
     gcn_optimizer = optim.Adam(gcn_model.parameters(),
                            lr=args.gcn_lr, weight_decay=args.gcn_weight_decay)
