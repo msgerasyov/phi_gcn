@@ -7,7 +7,6 @@ import types
 from collections import deque
 
 import gym
-import gym_miniworld
 import numpy as np
 import torch
 import torch.nn as nn
@@ -115,13 +114,15 @@ def main():
     # GCN Model and optimizer
     from pygcn.train import update_graph
     from pygcn.models import GCN, GAT, SAGE
+    assert args.gnn in ['gcn', 'gat', 'sage']
+
     if args.gnn == 'gat':
         gcn_model = GAT(nfeat=actor_critic.base.output_size,
                     nhid=args.gcn_hidden)
     elif args.gnn == 'sage':
         gcn_model = SAGE(nfeat=actor_critic.base.output_size,
                     nhid=args.gcn_hidden)
-    else:
+    elif args.gnn == 'gcn':
         gcn_model = GCN(nfeat=actor_critic.base.output_size,
                     nhid=args.gcn_hidden)
 

@@ -27,14 +27,13 @@ def update_graph(model, optimizer, features, adj, rew_states, loss, args,envs):
     else:
         labels = torch.zeros((len(features))).type(torch.LongTensor)
         idx_train = torch.LongTensor([0])
-   
-    
+
+
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
     deg = np.diag(adj.toarray().sum(axis=1))
     laplacian = torch.from_numpy((deg - adj.toarray()).astype(np.float32))
-    adj = normalize(sp.csr_matrix(adj) + sp.eye(adj.shape[0]))
+    adj = sp.csr_matrix(adj) + sp.eye(adj.shape[0])
     adj = sparse_mx_to_torch_sparse_tensor(adj)
-
 
     if args.cuda and torch.cuda.is_available():
         model.cuda()
@@ -56,5 +55,3 @@ def update_graph(model, optimizer, features, adj, rew_states, loss, args,envs):
         loss_train +=  args.gcn_lambda * loss_reg.squeeze()
         loss_train.backward()
         optimizer.step()
-
-        
