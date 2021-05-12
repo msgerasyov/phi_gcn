@@ -19,6 +19,7 @@ from envs import make_vec_envs
 from model import Policy
 from storage import RolloutStorage
 import networkx as nx
+import dgl
 import scipy.sparse as sp
 from utils import update_linear_schedule
 
@@ -34,6 +35,7 @@ if args.recurrent_policy:
 num_updates = int(args.num_frames) // args.num_steps // args.num_processes
 
 np.random.seed(args.seed)
+dgl.seed(args.seed)
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
