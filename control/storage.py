@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
-
+import networkx as nx
+import dgl
+import numpy as np
 
 def _flatten_helper(T, N, _tensor):
     return _tensor.view(T * N, *_tensor.size()[2:])
@@ -60,23 +62,23 @@ class RolloutStorage(object):
     def compute_returns(self, next_value, use_gae, gamma, tau, gcn , alpha):
 
         total_len = self.hidden_states.size(0) * self.hidden_states.size(1)
-        adj = torch.eye(total_len)
+        g = dgl.from_networkx(nx.from_numpy_array(np.eye(total_len)))
         self.adv =torch.zeros(self.num_steps + 1, self.num_processes, 1)
         self.adv_comb =torch.zeros(self.num_steps + 1, self.num_processes, 1)
         if self.hidden_states.is_cuda:
-            adj=adj.cuda()        
+            g = g.to('cuda')
             self.adv = self.adv.cuda()
             self.adv_comb = self.adv_comb.cuda()
 
 
-        gcn_phi = torch.exp(gcn(self.hidden_states.reshape(total_len, self.hidden_states.size(2) ), adj))
+        gcn_phi = torch.exp(gcn(self.hidden_states.reshape(total_len, self.hidden_states.size(2) ), g))
         gcn_phi = gcn_phi[:,1].reshape(self.hidden_states.size(0), self.hidden_states.size(1), 1).detach()
         if use_gae:
             self.value_preds[-1] = next_value
             combined = alpha * self.value_preds + (1-alpha) *gcn_phi
             gae = 0
             gae_comb = 0
-            
+
             for step in reversed(range(self.rewards.size(0))):
                 delta = self.rewards[step] + gamma * self.value_preds[step + 1] * self.masks[step + 1] - self.value_preds[step]
                 gae = delta + gamma * tau * self.masks[step + 1] * gae

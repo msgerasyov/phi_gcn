@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+import dgl
 
 from pygcn.utils import normalize,sparse_mx_to_torch_sparse_tensor
 import scipy.sparse as sp
@@ -33,22 +34,24 @@ def update_graph(model, optimizer, features, adj, rew_states, loss, args,envs):
     deg = np.diag(adj.toarray().sum(axis=1))
     laplacian = torch.from_numpy((deg - adj.toarray()).astype(np.float32))
     adj = sp.csr_matrix(adj) + sp.eye(adj.shape[0])
-    adj = sparse_mx_to_torch_sparse_tensor(adj)
+    g = dgl.from_scipy(adj)
+
 
     if args.cuda and torch.cuda.is_available():
         model.cuda()
         features = features.cuda()
-        adj = adj.cuda()
         laplacian =laplacian.cuda()
         labels = labels.cuda()
         idx_train = idx_train.cuda()
+        g = g.to('cuda')
+
 
     t_total = time.time()
     for epoch in range(args.gcn_epochs):
         t = time.time()
         model.train()
         optimizer.zero_grad()
-        output = model(features, adj)
+        output = model(features, g)
         loss_train = F.nll_loss(output[idx_train], labels[idx_train])
         soft_out= torch.unsqueeze(torch.nn.functional.softmax(output,dim=1)[:,1],1)
         loss_reg  = torch.mm(torch.mm(soft_out.T,laplacian),soft_out)
