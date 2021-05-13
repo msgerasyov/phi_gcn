@@ -42,7 +42,7 @@ class SAGE(nn.Module):
         self.gc1= SAGEConv(nfeat, nhid, aggregator_type='mean', bias=True)
         self.gc2 = SAGEConv(nhid, nclass, aggregator_type='lstm', bias=True)
 
-    def forward(self, x, adj):
+    def forward(self, x, g):
         x = F.elu(self.gc1(g, x))
         x = self.gc2(g, x)
         return F.log_softmax(x, dim=1)
